@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="orbit_navy">#0A1628</color>
+    <color name="orbit_navy_dark">#050B14</color>
+    <color name="orbit_cyan">#00E5FF</color>
+    <color name="orbit_cyan_dim">#00838F</color>
+    <color name="orbit_blue">#2979FF</color>
+    <color name="orbit_text">#E0F7FA</color>
+    <color name="orbit_text_dim">#80CBC4</color>
+    <color name="orbit_card">#12243A</color>
+    <color name="orbit_user_bubble">#1565C0</color>
+    <color name="orbit_assistant_bubble">#1A3A4A</color>
+    <color name="orbit_system">#546E7A</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+</resources>

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/orbit_navy"
+    android:padding="16dp">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:text="AI Provider" android:textColor="@color/orbit_cyan" android:textStyle="bold" />
+        <EditText android:id="@+id/providerInput" android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:textColor="@color/orbit_text"
+            android:hint="openai" android:inputType="text" />
+
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:text="API Endpoint" android:textColor="@color/orbit_cyan" android:textStyle="bold"
+            android:layout_marginTop="8dp" />
+        <EditText android:id="@+id/endpointInput" android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:textColor="@color/orbit_text"
+            android:inputType="textUri" />
+
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:text="Model" android:textColor="@color/orbit_cyan" android:textStyle="bold"
+            android:layout_marginTop="8dp" />
+        <EditText android:id="@+id/modelInput" android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:textColor="@color/orbit_text"
+            android:inputType="text" />
+
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:text="API Key (stored encrypted)" android:textColor="@color/orbit_cyan"
+            android:textStyle="bold" android:layout_marginTop="8dp" />
+        <EditText android:id="@+id/apiKeyInput" android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:textColor="@color/orbit_text"
+            android:inputType="textPassword" />
+
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:text="Search engine URL prefix" android:textColor="@color/orbit_cyan"
+            android:textStyle="bold" android:layout_marginTop="8dp" />
+        <EditText android:id="@+id/searchInput" android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:textColor="@color/orbit_text"
+            android:inputType="textUri" />
+
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:text="Home Assistant URL" android:textColor="@color/orbit_cyan"
+            android:textStyle="bold" android:layout_marginTop="16dp" />
+        <EditText android:id="@+id/haUrlInput" android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:textColor="@color/orbit_text"
+            android:hint="https://homeassistant.local:8123" android:inputType="textUri" />
+
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:text="Home Assistant Token" android:textColor="@color/orbit_cyan"
+            android:textStyle="bold" android:layout_marginTop="8dp" />
+        <EditText android:id="@+id/haTokenInput" android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:textColor="@color/orbit_text"
+            android:inputType="textPassword" />
+
+        <Switch android:id="@+id/ttsSwitch" android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:text="Spoken responses (TTS)"
+            android:textColor="@color/orbit_text" android:layout_marginTop="16dp" />
+
+        <Switch android:id="@+id/offlineSwitch" android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:text="Prefer offline mode"
+            android:textColor="@color/orbit_text" />
+
+        <Switch android:id="@+id/wakeWordSwitch" android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Hey Orbit wake word (foreground listening)"
+            android:textColor="@color/orbit_text"
+            android:layout_marginTop="8dp" />
+
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:text="Requires Microphone + Notifications. Shows a persistent notification while listening. Uses more battery. Say “Hey Orbit”, then your command. Turn off when not needed. On Samsung, also disable battery restrictions for ORBIT AI."
+            android:textColor="@color/orbit_text_dim"
+            android:textSize="12sp"
+            android:paddingBottom="8dp" />
+
+        <Button android:id="@+id/saveButton" android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:text="Save"
+            android:layout_marginTop="16dp" />
+        <Button android:id="@+id/clearKeyButton" android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:text="Clear API key"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+    </LinearLayout>
+</ScrollView>

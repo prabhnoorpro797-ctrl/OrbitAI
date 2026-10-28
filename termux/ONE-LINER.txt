@@ -1,0 +1,7 @@
+ORBIT AI – Termux one-liner (plug USB, paste in Termux):
+
+for d in /storage/usb* /mnt/media_rw/* /storage/* /sdcard; do f=$(find $d -name 'OrbitAI.apk' 2>/dev/null | head -1); [ -n "$f" ] && termux-open "$f" && break; done
+
+After first setup-alias.sh you only need:
+
+orbitinstall
