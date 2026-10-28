@@ -100,7 +100,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         updateStatus()
-        appendSystem("ORBIT AI online. Tap the microphone or type a command. Say \"help\" for examples.")
+        appendSystem("ORBIT online — no API needed for phone control. Try: open youtube · youtube music · play store whatsapp · flashlight · help")
         requestCorePermissions()
         handleWakeIntent(intent)
     }
@@ -198,13 +198,28 @@ class MainActivity : AppCompatActivity() {
             CommandParser.Type.SEARCH -> {
                 reply(phone.searchWeb(offline.payload))
             }
+            CommandParser.Type.SEARCH_YOUTUBE -> {
+                reply(phone.searchYouTube(offline.payload))
+            }
+            CommandParser.Type.SEARCH_PLAYSTORE -> {
+                reply(phone.searchPlayStore(offline.payload))
+            }
             CommandParser.Type.CALL -> {
-                confirmSensitive("Call $offline.payload?") {
+                confirmSensitive("Call ${offline.payload}?") {
                     reply(phone.startCall(offline.payload))
                 }
             }
             CommandParser.Type.MESSAGE -> {
                 reply(phone.prepareMessage(offline.payload))
+            }
+            CommandParser.Type.WHATSAPP_CALL -> {
+                val target = offline.payload.ifBlank { "someone" }
+                confirmSensitive("Open WhatsApp to call $target?") {
+                    reply(phone.whatsappCall(offline.payload))
+                }
+            }
+            CommandParser.Type.WHATSAPP_CHAT -> {
+                reply(phone.whatsappChat(offline.payload))
             }
             CommandParser.Type.ROUTINE_RECORD_START -> {
                 val svc = OrbitAccessibilityService.instance
@@ -269,9 +284,9 @@ class MainActivity : AppCompatActivity() {
                 if (!isOnline() || Prefs.offlineModePreferred || Prefs.apiKey.isBlank()) {
                     reply(
                         if (Prefs.apiKey.isBlank())
-                            "Offline / no API key. I can open apps, settings, flashlight, time, and local routines. Configure AI in Settings for full chat."
+                            "No API key needed for phone control. Try: open youtube · youtube funny cats · play store whatsapp · open chrome · flashlight · what time is it · help"
                         else
-                            "No internet. Local commands only."
+                            "No internet. Local commands only — apps, YouTube, Play Store, flashlight, time, routines."
                     )
                 } else {
                     lifecycleScope.launch {
@@ -376,17 +391,22 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         private val HELP_TEXT = """
-            Examples:
-            • "Open YouTube" / "Open Settings"
-            • "Turn on flashlight"
-            • "What time is it?"
-            • "Search quantum computing"
-            • "Call Mom" (needs confirmation)
-            • "Record my steps" → do actions → "Stop recording"
-            • "Repeat <routine name>"
-            • "List routines"
-            Configure AI API key in Settings for full conversation.
-            Enable Accessibility Service for step recording & replay.
+            Works without any API key:
+            • Open YouTube / open Chrome / open WhatsApp
+            • YouTube funny cats
+            • Play store WhatsApp
+            • Install Instagram
+            • Turn on flashlight
+            • What time is it?
+            • Search quantum computing
+            • Open Wi‑Fi settings
+            • Call Mom (phone call, asks confirmation)
+            • WhatsApp call Mom / call Mom on whatsapp
+            • WhatsApp +9198… / whatsapp message John hi
+            • Record my steps → stop recording → repeat …
+
+            Optional AI chat: Settings → free key from Groq or Google AI Studio.
+            Step recording needs Accessibility Service enabled.
         """.trimIndent()
     }
 }

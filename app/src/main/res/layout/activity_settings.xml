@@ -10,10 +10,19 @@
         android:orientation="vertical">
 
         <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:text="Phone commands work with NO API key. AI chat is optional."
+            android:textColor="@color/orbit_text_dim" android:textSize="13sp"
+            android:paddingBottom="6dp" />
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:text="Free keys: console.groq.com  or  aistudio.google.com"
+            android:textColor="@color/orbit_cyan" android:textSize="12sp"
+            android:paddingBottom="12dp" />
+
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
             android:text="AI Provider" android:textColor="@color/orbit_cyan" android:textStyle="bold" />
         <EditText android:id="@+id/providerInput" android:layout_width="match_parent"
             android:layout_height="wrap_content" android:textColor="@color/orbit_text"
-            android:hint="openai" android:inputType="text" />
+            android:hint="groq / openai / google" android:inputType="text" />
 
         <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
             android:text="API Endpoint" android:textColor="@color/orbit_cyan" android:textStyle="bold"
