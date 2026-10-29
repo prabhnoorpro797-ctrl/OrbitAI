@@ -32,7 +32,9 @@ import com.orbitai.assistant.routines.RoutineRepository
 import com.orbitai.assistant.util.Prefs
 import com.orbitai.assistant.voice.SpeechHelper
 import com.orbitai.assistant.voice.TtsHelper
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainActivity : AppCompatActivity() {
 
@@ -337,7 +339,7 @@ class MainActivity : AppCompatActivity() {
                             } catch (e: Exception) {
                                 reply(e.message ?: "Could not save memory")
                             }
-                            return@processCommand
+                            return@launch
                         }
                         val result = ai.chat(text, history, sys)
                         if (result.success) {
