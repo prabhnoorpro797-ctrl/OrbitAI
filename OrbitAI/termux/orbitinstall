@@ -1,0 +1,4 @@
+#!/data/data/com.termux/files/usr/bin/bash
+# Short entry point – same as install-termux.sh
+DIR="$(cd "$(dirname "$0")" && pwd)"
+exec bash "$DIR/install-termux.sh" "$@"

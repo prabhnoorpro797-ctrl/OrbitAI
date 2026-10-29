@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:background="@color/orbit_navy" android:padding="16dp">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:text="Select providers (need keys in Settings)" android:textColor="@color/orbit_cyan"/>
+        <LinearLayout android:id="@+id/providerChecks" android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:orientation="vertical"/>
+        <EditText android:id="@+id/questionInput" android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:hint="Ask all selected experts…"
+            android:textColor="@color/orbit_text" android:minLines="3" android:layout_marginTop="8dp"/>
+        <Button android:id="@+id/askButton" android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:text="Ask panel"/>
+        <LinearLayout android:id="@+id/resultsContainer" android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginTop="12dp"/>
+    </LinearLayout>
+</ScrollView>

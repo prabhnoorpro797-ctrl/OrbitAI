@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.OrbitAI" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+        <item name="colorPrimary">@color/orbit_cyan</item>
+        <item name="colorPrimaryVariant">@color/orbit_blue</item>
+        <item name="colorOnPrimary">@color/orbit_navy</item>
+        <item name="colorSecondary">@color/orbit_blue</item>
+        <item name="colorOnSecondary">@color/white</item>
+        <item name="android:statusBarColor">@color/orbit_navy_dark</item>
+        <item name="android:navigationBarColor">@color/orbit_navy_dark</item>
+        <item name="android:windowBackground">@color/orbit_navy</item>
+        <item name="actionBarStyle">@style/OrbitActionBar</item>
+    </style>
+    <style name="OrbitActionBar" parent="Widget.MaterialComponents.ActionBar.Primary">
+        <item name="background">@color/orbit_navy_dark</item>
+        <item name="titleTextColor">@color/orbit_cyan</item>
+    </style>
+</resources>

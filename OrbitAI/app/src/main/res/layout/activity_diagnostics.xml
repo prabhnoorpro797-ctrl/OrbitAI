@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:orientation="vertical" android:background="@color/orbit_navy" android:padding="16dp">
+    <Button android:id="@+id/runDiagnosticsButton" android:layout_width="match_parent"
+        android:layout_height="wrap_content" android:text="Run diagnostics"/>
+    <Button android:id="@+id/repairButton" android:layout_width="match_parent"
+        android:layout_height="wrap_content" android:text="Safe auto-repair"/>
+    <ScrollView android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1">
+        <TextView android:id="@+id/diagnosticsText" android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:textColor="@color/orbit_text"
+            android:paddingTop="12dp" android:textSize="14sp"/>
+    </ScrollView>
+</LinearLayout>

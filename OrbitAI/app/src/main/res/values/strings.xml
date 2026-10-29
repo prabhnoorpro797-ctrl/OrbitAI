@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ORBIT AI</string>
+    <string name="settings_title">Settings</string>
+    <string name="routines_title">Routines</string>
+    <string name="devices_title">Devices</string>
+    <string name="backup_title">Backup</string>
+    <string name="accessibility_service_description">ORBIT AI optional screen automation and step recorder. Only active when you enable it. You can disable it anytime in Accessibility settings.</string>
+</resources>

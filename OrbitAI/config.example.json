@@ -1,0 +1,35 @@
+{
+  "active_provider": "groq",
+  "providers": {
+    "openai": {
+      "endpoint": "https://api.openai.com/v1/chat/completions",
+      "model": "gpt-4o-mini",
+      "api_key": "PUT_IN_APP_SETTINGS_NOT_HERE"
+    },
+    "groq": {
+      "endpoint": "https://api.groq.com/openai/v1/chat/completions",
+      "model": "llama-3.1-8b-instant",
+      "api_key": "PUT_IN_APP_SETTINGS_NOT_HERE"
+    },
+    "xai": {
+      "endpoint": "https://api.x.ai/v1/chat/completions",
+      "model": "grok-2-latest",
+      "api_key": "PUT_IN_APP_SETTINGS_NOT_HERE"
+    },
+    "anthropic": {
+      "endpoint": "https://api.anthropic.com/v1/messages",
+      "model": "claude-3-5-haiku-latest",
+      "api_key": "PUT_IN_APP_SETTINGS_NOT_HERE"
+    },
+    "gemini": {
+      "model": "gemini-1.5-flash",
+      "api_key": "PUT_IN_APP_SETTINGS_NOT_HERE"
+    },
+    "ollama": {
+      "endpoint": "http://127.0.0.1:11434/v1/chat/completions",
+      "model": "llama3.2",
+      "note": "Run Ollama on a machine reachable from the phone; cleartext may need network security config for LAN IPs"
+    }
+  },
+  "notes": "Never commit real keys. Enter keys only in the app Settings screen (encrypted storage)."
+}
