@@ -9,7 +9,6 @@ import androidx.core.content.ContextCompat
 import com.orbitai.assistant.ai.AiOrchestrator
 import com.orbitai.assistant.ai.providers.ProviderId
 import com.orbitai.assistant.memory.MemoryRepository
-import com.orbitai.assistant.memory.OrbitDatabase
 import com.orbitai.assistant.util.Prefs
 
 data class DiagnosticItem(
@@ -24,7 +23,6 @@ class DiagnosticsEngine(private val context: Context) {
     suspend fun run(): List<DiagnosticItem> {
         val items = mutableListOf<DiagnosticItem>()
 
-        // Network
         val online = isOnline()
         items += DiagnosticItem(
             "Network",
@@ -33,7 +31,6 @@ class DiagnosticsEngine(private val context: Context) {
             "Enable Wi‑Fi or mobile data"
         )
 
-        // Permissions
         val mic = has(Manifest.permission.RECORD_AUDIO)
         items += DiagnosticItem(
             "Microphone",
@@ -41,69 +38,36 @@ class DiagnosticsEngine(private val context: Context) {
             if (mic) "Granted" else "Missing",
             "Settings → Apps → ORBIT AI → Permissions → Microphone"
         )
-        val contacts = has(Manifest.permission.READ_CONTACTS)
-        items += DiagnosticItem(
-            "Contacts",
-            contacts,
-            if (contacts) "Granted" else "Optional — needed for WhatsApp by name",
-            "Grant Contacts for name lookup"
-        )
 
-        // AI config
-        val pid = try {
-            ProviderId.entries.firstOrNull { it.id == Prefs.aiProvider } ?: ProviderId.OPENAI
-        } catch (_: Exception) { ProviderId.OPENAI }
+        val pid = ProviderId.entries.firstOrNull { it.id == Prefs.aiProvider } ?: ProviderId.OPENAI
         val key = Prefs.keyFor(pid)
         items += DiagnosticItem(
             "Active AI provider",
             key.isNotBlank() || pid == ProviderId.OLLAMA,
             "${pid.displayName} · model ${Prefs.modelFor(pid)} · key ${if (key.isNotBlank()) "set" else "missing"}",
-            "Open Settings and paste an API key for ${pid.displayName}"
-        )
-
-        // Database
-        val dbOk = try {
-            OrbitDatabase.get(context).memoryDao().messageCount()
-            true
-        } catch (e: Exception) {
-            false
-        }
-        items += DiagnosticItem(
-            "Local database",
-            dbOk,
-            if (dbOk) "Room memory DB OK" else "Database error",
-            "Reinstall app or clear app storage"
+            "Open Settings and paste an API key. Groq model: llama-3.1-8b-instant"
         )
 
         val mem = MemoryRepository(context)
         val (mc, cc) = try { mem.stats() } catch (_: Exception) { 0 to 0 }
-        items += DiagnosticItem(
-            "Memory store",
-            true,
-            "$mc long-term memories · $cc chat messages saved",
-            ""
-        )
+        items += DiagnosticItem("Memory store", true, "$mc memories · $cc chat messages", "")
 
-        // Optional live AI ping (only if key present and online)
         if (online && (key.isNotBlank() || pid == ProviderId.OLLAMA)) {
             val reply = AiOrchestrator().healthCheck(pid)
             items += DiagnosticItem(
                 "AI backend health",
                 reply.success,
-                if (reply.success) "Responded in ${reply.latencyMs} ms"
-                else (reply.error ?: "Failed"),
-                "Check model name and API key. Groq free model example: llama-3.1-8b-instant"
+                if (reply.success) "Responded in ${reply.latencyMs} ms" else (reply.error ?: "Failed"),
+                "Check model name and API key"
             )
         }
 
-        // Offline mode flag
         items += DiagnosticItem(
             "Prefer offline mode",
             !Prefs.offlineModePreferred,
             if (Prefs.offlineModePreferred) "ON — AI chat disabled" else "OFF",
             "Turn off in Settings to enable AI chat"
         )
-
         return items
     }
 
@@ -113,7 +77,6 @@ class DiagnosticsEngine(private val context: Context) {
             Prefs.offlineModePreferred = false
             changes += "Turned off Prefer offline mode"
         }
-        // Fix common bad Groq model
         if (Prefs.aiProvider == "groq") {
             val m = Prefs.modelFor(ProviderId.GROQ)
             if (m.contains("3.3-70b") || m.isBlank()) {
