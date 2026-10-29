@@ -23,7 +23,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.orbitai.assistant.R
-import com.orbitai.assistant.ai.AiClient
+import com.orbitai.assistant.ai.AiOrchestrator
+import com.orbitai.assistant.memory.MemoryRepository
 import com.orbitai.assistant.automation.OrbitAccessibilityService
 import com.orbitai.assistant.commands.CommandParser
 import com.orbitai.assistant.phone.PhoneController
@@ -39,6 +40,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var inputField: EditText
     private lateinit var sendButton: ImageButton
     private lateinit var micButton: FloatingActionButton
+    private lateinit var imageButton: ImageButton
     private lateinit var statusText: TextView
     private lateinit var waveform: View
     private lateinit var emergencyStop: ImageButton
@@ -47,7 +49,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var tts: TtsHelper
     private lateinit var phone: PhoneController
     private lateinit var routines: RoutineRepository
-    private val ai = AiClient()
+    private val ai = AiOrchestrator()
+    private lateinit var memoryRepo: MemoryRepository
     private val history = mutableListOf<Pair<String, String>>() // role, content
     private var speechHelper: SpeechHelper? = null
     private var listening = false
@@ -70,6 +73,7 @@ class MainActivity : AppCompatActivity() {
         inputField = findViewById(R.id.inputField)
         sendButton = findViewById(R.id.sendButton)
         micButton = findViewById(R.id.micButton)
+        imageButton = findViewById(R.id.imageButton)
         statusText = findViewById(R.id.statusText)
         waveform = findViewById(R.id.waveform)
         emergencyStop = findViewById(R.id.emergencyStop)
@@ -84,12 +88,14 @@ class MainActivity : AppCompatActivity() {
         }
         phone = PhoneController(this)
         routines = RoutineRepository(this)
+        memoryRepo = MemoryRepository(this)
 
         sendButton.setOnClickListener { submitText(inputField.text.toString()) }
         inputField.setOnEditorActionListener { _, _, _ ->
             submitText(inputField.text.toString()); true
         }
         micButton.setOnClickListener { toggleListen() }
+        imageButton.setOnClickListener { pickImage.launch("image/*") }
         emergencyStop.setOnClickListener {
             OrbitAccessibilityService.instance?.cancelReplay()
             OrbitAccessibilityService.instance?.stopRecording()
@@ -182,6 +188,9 @@ class MainActivity : AppCompatActivity() {
             CommandParser.Type.TIME -> {
                 val msg = phone.speakTime()
                 reply(msg)
+            }
+            CommandParser.Type.BATTERY -> {
+                reply(phone.batteryStatus())
             }
             CommandParser.Type.FLASHLIGHT -> {
                 reply(phone.toggleFlashlight(offline.payload))
@@ -281,31 +290,76 @@ class MainActivity : AppCompatActivity() {
                 reply(HELP_TEXT)
             }
             CommandParser.Type.CONVERSATION, CommandParser.Type.UNKNOWN, CommandParser.Type.WEB_SEARCH -> {
-                if (!isOnline() || Prefs.offlineModePreferred || Prefs.apiKey.isBlank()) {
+                if (offline.payload.startsWith("REMEMBER|")) {
+                    val fact = offline.payload.removePrefix("REMEMBER|")
+                    lifecycleScope.launch {
+                        try {
+                            memoryRepo.remember(fact.take(60), fact)
+                            reply("I'll remember that: $fact")
+                        } catch (e: Exception) {
+                            reply(e.message ?: "Could not save memory")
+                        }
+                    }
+                    updateStatus()
+                    return
+                }
+                val canUseAi = Prefs.apiKey.isNotBlank() &&
+                        !Prefs.offlineModePreferred &&
+                        isOnline()
+                if (!canUseAi) {
+                    // Not a phone command we recognized — guide the user (still fully usable offline)
                     reply(
-                        if (Prefs.apiKey.isBlank())
-                            "No API key needed for phone control. Try: open youtube · youtube funny cats · play store whatsapp · open chrome · flashlight · what time is it · help"
-                        else
-                            "No internet. Local commands only — apps, YouTube, Play Store, flashlight, time, routines."
+                        "I can control the phone without internet. Try exact phrases:\n" +
+                                "• open youtube\n" +
+                                "• youtube lo-fi music\n" +
+                                "• play store whatsapp\n" +
+                                "• whatsapp call Mom\n" +
+                                "• open chrome\n" +
+                                "• turn on flashlight\n" +
+                                "• what time is it\n" +
+                                "• help\n\n" +
+                                tipWhyNoAi()
                     )
                 } else {
                     lifecycleScope.launch {
                         appendSystem("Thinking…")
-                        val result = ai.chat(text, history)
+                        var sys = com.orbitai.assistant.ai.AiClient.DEFAULT_SYSTEM
+                        if (Prefs.memoryEnabled) {
+                            val ctx = memoryRepo.contextForPrompt(text)
+                            if (ctx.isNotBlank()) sys += "\n\nUser memories:\n$ctx"
+                        }
+                        // Handle explicit remember
+                        if (offline.payload.startsWith("REMEMBER|")) {
+                            val fact = offline.payload.removePrefix("REMEMBER|")
+                            try {
+                                memoryRepo.remember(fact.take(40), fact)
+                                reply("I'll remember that: $fact")
+                            } catch (e: Exception) {
+                                reply(e.message ?: "Could not save memory")
+                            }
+                            return@processCommand
+                        }
+                        val result = ai.chat(text, history, sys)
                         if (result.success) {
                             history.add("user" to text)
                             history.add("assistant" to result.text)
-                            // Try action parsing
+                            if (Prefs.memoryEnabled) {
+                                memoryRepo.addChat("user", text)
+                                memoryRepo.addChat("assistant", result.text, result.providerId)
+                            }
                             val action = CommandParser.parseAiAction(result.text)
                             if (action != null && action.type != CommandParser.Type.UNKNOWN &&
                                 action.type != CommandParser.Type.CONVERSATION
                             ) {
-                                processCommand(action.raw) // reuse offline path where possible
+                                processCommand(action.raw)
                             } else {
                                 reply(result.text)
                             }
                         } else {
-                            reply(result.error ?: "AI unavailable")
+                            reply(
+                                (result.error ?: "AI unavailable") +
+                                        "\n\nPhone commands still work: open youtube · whatsapp call Mom · flashlight · help"
+                            )
                         }
                     }
                 }
@@ -345,10 +399,29 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun isOnline(): Boolean {
-        val cm = getSystemService(ConnectivityManager::class.java)
-        val net = cm.activeNetwork ?: return false
-        val caps = cm.getNetworkCapabilities(net) ?: return false
-        return caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+        return try {
+            val cm = getSystemService(ConnectivityManager::class.java) ?: return false
+            val net = cm.activeNetwork ?: return false
+            val caps = cm.getNetworkCapabilities(net) ?: return false
+            // VALIDATED can be false briefly on mobile data; INTERNET is enough for API calls
+            caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) ||
+                    caps.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
+                    caps.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)
+        } catch (_: Exception) {
+            true // if check fails, still allow AI attempt
+        }
+    }
+
+    private fun tipWhyNoAi(): String {
+        return when {
+            Prefs.offlineModePreferred ->
+                "Tip: Settings → turn OFF “Prefer offline mode” to use AI chat."
+            Prefs.apiKey.isBlank() ->
+                "Tip: for AI chat, add a free key in Settings (Groq or Google AI Studio). Phone commands work without it."
+            !isOnline() ->
+                "Tip: status shows offline — check Wi‑Fi/mobile data. Phone commands still work."
+            else -> ""
+        }
     }
 
     private fun updateStatus() {
@@ -376,6 +449,9 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.action_settings -> startActivity(Intent(this, SettingsActivity::class.java))
+            R.id.action_expert -> startActivity(Intent(this, ExpertPanelActivity::class.java))
+            R.id.action_memory -> startActivity(Intent(this, MemoryActivity::class.java))
+            R.id.action_diagnostics -> startActivity(Intent(this, DiagnosticsActivity::class.java))
             R.id.action_routines -> startActivity(Intent(this, RoutinesActivity::class.java))
             R.id.action_devices -> startActivity(Intent(this, DevicesActivity::class.java))
             R.id.action_backup -> startActivity(Intent(this, BackupActivity::class.java))

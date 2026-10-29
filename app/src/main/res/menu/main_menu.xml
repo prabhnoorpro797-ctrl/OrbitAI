@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item android:id="@+id/action_routines" android:title="Routines" app:showAsAction="never" />
-    <item android:id="@+id/action_devices" android:title="Devices" app:showAsAction="never" />
-    <item android:id="@+id/action_backup" android:title="Backup" app:showAsAction="never" />
-    <item android:id="@+id/action_settings" android:title="Settings" app:showAsAction="ifRoom" />
+    <item android:id="@+id/action_expert" android:title="Expert Panel" app:showAsAction="never"/>
+    <item android:id="@+id/action_memory" android:title="Memory" app:showAsAction="never"/>
+    <item android:id="@+id/action_diagnostics" android:title="Diagnostics" app:showAsAction="never"/>
+    <item android:id="@+id/action_routines" android:title="Routines" app:showAsAction="never"/>
+    <item android:id="@+id/action_devices" android:title="Devices" app:showAsAction="never"/>
+    <item android:id="@+id/action_backup" android:title="Backup" app:showAsAction="never"/>
+    <item android:id="@+id/action_settings" android:title="Settings" app:showAsAction="ifRoom"/>
 </menu>

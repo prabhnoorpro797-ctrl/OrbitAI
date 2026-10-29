@@ -403,5 +403,17 @@ class PhoneController(private val context: Context) {
         }
     }
 
+
+    fun batteryStatus(): String {
+        return try {
+            val bm = context.getSystemService(Context.BATTERY_SERVICE) as android.os.BatteryManager
+            val pct = bm.getIntProperty(android.os.BatteryManager.BATTERY_PROPERTY_CAPACITY)
+            val charging = bm.isCharging
+            "Battery is at $pct percent" + if (charging) " and charging" else ""
+        } catch (e: Exception) {
+            "Could not read battery: ${e.message}"
+        }
+    }
+
     private fun prettyName(key: String) = key.replaceFirstChar { it.uppercase() }
 }

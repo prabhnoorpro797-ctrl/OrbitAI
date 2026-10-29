@@ -119,6 +119,14 @@
                 android:maxLines="4" />
 
             <ImageButton
+                android:id="@+id/imageButton"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:src="@android:drawable/ic_menu_gallery"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Attach image"
+                android:tint="@color/orbit_cyan" />
+            <ImageButton
                 android:id="@+id/sendButton"
                 android:layout_width="48dp"
                 android:layout_height="48dp"

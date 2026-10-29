@@ -59,7 +59,11 @@ class SettingsActivity : AppCompatActivity() {
         val haToken = findViewById<EditText>(R.id.haTokenInput)
         val ttsSwitch = findViewById<Switch>(R.id.ttsSwitch)
         val offlineSwitch = findViewById<Switch>(R.id.offlineSwitch)
+        val adamSwitch = findViewById<Switch>(R.id.adamSwitch)
+        val elevenKey = findViewById<EditText>(R.id.elevenKeyInput)
         wakeWordSwitch = findViewById(R.id.wakeWordSwitch)
+        adamSwitch.isChecked = Prefs.ttsUseAdamStyle
+        elevenKey.hint = if (Prefs.elevenLabsKey.isNotBlank()) "•••• (ElevenLabs saved)" else "ElevenLabs API key (optional)"
         val saveBtn = findViewById<Button>(R.id.saveButton)
         val clearKeyBtn = findViewById<Button>(R.id.clearKeyButton)
 
@@ -96,6 +100,9 @@ class SettingsActivity : AppCompatActivity() {
             if (tok.isNotEmpty()) Prefs.haToken = tok
             Prefs.ttsEnabled = ttsSwitch.isChecked
             Prefs.offlineModePreferred = offlineSwitch.isChecked
+            Prefs.ttsUseAdamStyle = adamSwitch.isChecked
+            val ek = elevenKey.text.toString().trim()
+            if (ek.isNotEmpty()) Prefs.elevenLabsKey = ek
             // wake word is applied live via the switch
             Toast.makeText(this, "Saved", Toast.LENGTH_SHORT).show()
             finish()

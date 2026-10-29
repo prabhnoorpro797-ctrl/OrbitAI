@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:orientation="vertical" android:background="@color/orbit_navy" android:padding="12dp">
+    <EditText android:id="@+id/memoryKey" android:layout_width="match_parent"
+        android:layout_height="wrap_content" android:hint="Key (e.g. minecraft server)"
+        android:textColor="@color/orbit_text"/>
+    <EditText android:id="@+id/memoryContent" android:layout_width="match_parent"
+        android:layout_height="wrap_content" android:hint="Fact to remember"
+        android:textColor="@color/orbit_text"/>
+    <Button android:id="@+id/addMemoryButton" android:layout_width="match_parent"
+        android:layout_height="wrap_content" android:text="Save memory"/>
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <Button android:id="@+id/clearChatButton" android:layout_width="0dp" android:layout_weight="1"
+            android:layout_height="wrap_content" android:text="Clear chat"/>
+        <Button android:id="@+id/clearMemoriesButton" android:layout_width="0dp" android:layout_weight="1"
+            android:layout_height="wrap_content" android:text="Clear memories"/>
+    </LinearLayout>
+    <ListView android:id="@+id/memoryList" android:layout_width="match_parent"
+        android:layout_height="0dp" android:layout_weight="1"/>
+</LinearLayout>

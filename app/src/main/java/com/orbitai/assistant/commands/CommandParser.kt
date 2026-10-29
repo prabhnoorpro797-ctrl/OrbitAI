@@ -18,6 +18,7 @@ object CommandParser {
         WHATSAPP_CHAT,
         FLASHLIGHT,
         TIME,
+        BATTERY,
         ROUTINE_RECORD_START,
         ROUTINE_RECORD_STOP,
         ROUTINE_PLAY,
@@ -84,6 +85,17 @@ object CommandParser {
         // Time
         if (t.contains("what time") || t.contains("current time") || t == "time") {
             return Command(Type.TIME, raw = text)
+        }
+
+        // Battery
+        if (t.contains("battery") || t.contains("charge level") || t.contains("how much charge")) {
+            return Command(Type.BATTERY, raw = text)
+        }
+
+        // Remember
+        if (t.startsWith("remember that ") || t.startsWith("remember ")) {
+            val body = t.removePrefix("remember that ").removePrefix("remember ").trim()
+            return Command(Type.CONVERSATION, "REMEMBER|$body", text)
         }
 
         // Flashlight

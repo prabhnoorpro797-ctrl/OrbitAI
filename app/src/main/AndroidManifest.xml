@@ -93,6 +93,19 @@
             android:label="@string/devices_title"
             android:parentActivityName=".ui.MainActivity" />
 
+
+        <activity
+            android:name=".ui.ExpertPanelActivity"
+            android:exported="false"
+            android:parentActivityName=".ui.MainActivity" />
+        <activity
+            android:name=".ui.MemoryActivity"
+            android:exported="false"
+            android:parentActivityName=".ui.MainActivity" />
+        <activity
+            android:name=".ui.DiagnosticsActivity"
+            android:exported="false"
+            android:parentActivityName=".ui.MainActivity" />
         <activity
             android:name=".ui.BackupActivity"
             android:exported="false"

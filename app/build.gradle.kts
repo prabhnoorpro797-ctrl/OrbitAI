@@ -1,6 +1,7 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("kotlin-kapt")
 }
 
 android {
@@ -9,10 +10,10 @@ android {
 
     defaultConfig {
         applicationId = "com.orbitai.assistant"
-        minSdk = 29  // Android 10
+        minSdk = 29
         targetSdk = 35
-        versionCode = 1
-        versionName = "1.0.0-debug"
+        versionCode = 2
+        versionName = "1.1.0-debug"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField("String", "AI_PROVIDER_DEFAULT", "\"openai\"")
         buildConfigField("String", "AI_ENDPOINT_DEFAULT", "\"https://api.openai.com/v1/chat/completions\"")
@@ -51,7 +52,6 @@ android {
 }
 
 dependencies {
-    // Core Android
     implementation("androidx.core:core-ktx:1.15.0")
     implementation("androidx.appcompat:appcompat:1.7.0")
     implementation("com.google.android.material:material:1.12.0")
@@ -65,25 +65,22 @@ dependencies {
     implementation("androidx.cardview:cardview:1.0.0")
     implementation("androidx.preference:preference-ktx:1.2.1")
     implementation("androidx.work:work-runtime-ktx:2.10.0")
-
-    // Navigation
     implementation("androidx.navigation:navigation-fragment-ktx:2.8.4")
     implementation("androidx.navigation:navigation-ui-ktx:2.8.4")
 
-    // Coroutines & Networking
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
-
-    // Local storage
-    implementation("androidx.datastore:datastore-preferences:1.1.1")
     implementation("com.google.code.gson:gson:2.11.0")
 
-    // Security for API keys
+    implementation("androidx.datastore:datastore-preferences:1.1.1")
     implementation("androidx.security:security-crypto:1.1.0-alpha06")
 
-    // Testing
+    val room = "2.6.1"
+    implementation("androidx.room:room-runtime:$room")
+    implementation("androidx.room:room-ktx:$room")
+    kapt("androidx.room:room-compiler:$room")
+
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")
     testImplementation("org.mockito:mockito-core:5.14.2")

@@ -74,6 +74,17 @@
             android:layout_height="wrap_content" android:text="Prefer offline mode"
             android:textColor="@color/orbit_text" />
 
+        <Switch android:id="@+id/adamSwitch" android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Adam-style voice (male / ElevenLabs Adam)"
+            android:textColor="@color/orbit_text" android:layout_marginTop="8dp"/>
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:text="Optional ElevenLabs API key for real Adam voice (paid/free tier). Without it, device male TTS is used."
+            android:textColor="@color/orbit_text_dim" android:textSize="12sp"/>
+        <EditText android:id="@+id/elevenKeyInput" android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:hint="ElevenLabs API key (optional)"
+            android:inputType="textPassword" android:textColor="@color/orbit_text"/>
+
         <Switch android:id="@+id/wakeWordSwitch" android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Hey Orbit wake word (foreground listening)"
