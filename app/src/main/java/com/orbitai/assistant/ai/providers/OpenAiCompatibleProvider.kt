@@ -80,7 +80,7 @@ class OpenAiCompatibleProvider(
 
     private fun defaultModel(): String = when (id) {
         ProviderId.GROQ -> "llama-3.1-8b-instant"
-        ProviderId.XAI -> "grok-2-latest"
+        ProviderId.XAI -> "grok-4.7"
         ProviderId.OLLAMA -> "llama3.2"
         else -> "gpt-4o-mini"
     }

@@ -17,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.orbitai.assistant.R
 import com.orbitai.assistant.util.Prefs
+import com.orbitai.assistant.ai.providers.ProviderId
 import com.orbitai.assistant.voice.VoiceService
 
 class SettingsActivity : AppCompatActivity() {
@@ -68,9 +69,11 @@ class SettingsActivity : AppCompatActivity() {
         val clearKeyBtn = findViewById<Button>(R.id.clearKeyButton)
 
         apiKey.hint = if (Prefs.apiKey.isNotBlank()) "•••••••• (saved)" else "Enter API key"
-        endpoint.setText(Prefs.aiEndpoint)
-        model.setText(Prefs.aiModel)
-        provider.setText(Prefs.aiProvider)
+        val activePid = ProviderId.entries.firstOrNull { it.id == Prefs.aiProvider.trim().lowercase() }
+            ?: ProviderId.OPENAI
+        endpoint.setText(Prefs.endpointFor(activePid))
+        model.setText(Prefs.modelFor(activePid))
+        provider.setText(activePid.id)
         search.setText(Prefs.searchEngine)
         haUrl.setText(Prefs.haUrl)
         haToken.hint = if (Prefs.haToken.isNotBlank()) "•••••••• (saved)" else "HA long-lived token"
@@ -89,11 +92,20 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         saveBtn.setOnClickListener {
+            val selectedPid = ProviderId.entries.firstOrNull {
+                it.id == provider.text.toString().trim().lowercase()
+            } ?: ProviderId.OPENAI
+            Prefs.aiProvider = selectedPid.id
             val key = apiKey.text.toString().trim()
-            if (key.isNotEmpty()) Prefs.apiKey = key
-            Prefs.aiEndpoint = endpoint.text.toString().trim()
-            Prefs.aiModel = model.text.toString().trim()
-            Prefs.aiProvider = provider.text.toString().trim()
+            if (key.isNotEmpty()) Prefs.setKeyFor(selectedPid, key)
+            val endpointValue = endpoint.text.toString().trim()
+            val modelValue = model.text.toString().trim()
+            Prefs.setEndpointFor(selectedPid, endpointValue)
+            Prefs.setModelFor(selectedPid, modelValue)
+            if (selectedPid == ProviderId.CUSTOM) {
+                Prefs.aiEndpoint = endpointValue
+                Prefs.aiModel = modelValue
+            }
             Prefs.searchEngine = search.text.toString().trim()
             Prefs.haUrl = haUrl.text.toString().trim()
             val tok = haToken.text.toString().trim()

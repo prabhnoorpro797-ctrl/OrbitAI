@@ -75,13 +75,15 @@ object Prefs {
 
     fun modelFor(pid: ProviderId): String {
         val custom = prefs.getString("model_${pid.id}", null)
+        // Migrate the retired Grok 2 default used by older Orbit builds.
+        if (pid == ProviderId.XAI && custom == "grok-2-latest") return "grok-4.7"
         if (!custom.isNullOrBlank()) return custom
         return when (pid) {
             ProviderId.OPENAI -> "gpt-4o-mini"
             ProviderId.GROQ -> "llama-3.1-8b-instant"
             ProviderId.XAI -> "grok-2-latest"
             ProviderId.ANTHROPIC -> "claude-3-5-haiku-latest"
-            ProviderId.GEMINI -> "gemini-1.5-flash"
+            ProviderId.GEMINI -> "gemini-2.5-flash"
             ProviderId.OLLAMA -> "llama3.2"
             ProviderId.CUSTOM -> aiModel
         }

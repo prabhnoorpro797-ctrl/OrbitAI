@@ -26,18 +26,12 @@ class GeminiProvider : AiProvider {
         if (apiKey.isBlank()) {
             return ProviderReply(id.id, "", false, "No Gemini API key", 0)
         }
-        val m = model.ifBlank { "gemini-1.5-flash" }
+        val m = model.ifBlank { "gemini-2.5-flash" }
         val url = endpoint.ifBlank {
             "https://generativelanguage.googleapis.com/v1beta/models/$m:generateContent?key=$apiKey"
         }
         return try {
             val contents = JSONArray()
-            if (systemPrompt.isNotBlank()) {
-                contents.put(
-                    JSONObject().put("role", "user")
-                        .put("parts", JSONArray().put(JSONObject().put("text", "System: $systemPrompt")))
-                )
-            }
             messages.takeLast(12).forEach { msg ->
                 val role = if (msg.role == "assistant") "model" else "user"
                 contents.put(
@@ -46,6 +40,12 @@ class GeminiProvider : AiProvider {
                 )
             }
             val body = JSONObject().put("contents", contents)
+            if (systemPrompt.isNotBlank()) {
+                body.put(
+                    "systemInstruction",
+                    JSONObject().put("parts", JSONArray().put(JSONObject().put("text", systemPrompt)))
+                )
+            }
             val req = Request.Builder()
                 .url(url)
                 .post(body.toString().toRequestBody("application/json".toMediaType()))

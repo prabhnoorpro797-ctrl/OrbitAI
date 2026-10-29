@@ -92,6 +92,26 @@ class MainActivity : AppCompatActivity() {
         routines = RoutineRepository(this)
         memoryRepo = MemoryRepository(this)
 
+        // Restore recent conversation from on-device storage after process restarts.
+        lifecycleScope.launch {
+            runCatching { memoryRepo.recentChat(40) }
+                .onSuccess { saved ->
+                    history.clear()
+                    saved.forEach { item ->
+                        if (item.role == "user" || item.role == "assistant") {
+                            history.add(item.role to item.content)
+                        }
+                        when (item.role) {
+                            "user" -> appendUser(item.content)
+                            "assistant" -> appendAssistant(item.content)
+                        }
+                    }
+                    while (history.size > 20) history.removeAt(0)
+                    if (saved.isNotEmpty()) conversationList.scrollToPosition(adapter.itemCount - 1)
+                }
+                .onFailure { appendSystem("Couldn't restore saved chat: ${it.message ?: "storage error"}") }
+        }
+
         sendButton.setOnClickListener { submitText(inputField.text.toString()) }
         inputField.setOnEditorActionListener { _, _, _ ->
             submitText(inputField.text.toString()); true
@@ -345,10 +365,9 @@ class MainActivity : AppCompatActivity() {
                         if (result.success) {
                             history.add("user" to text)
                             history.add("assistant" to result.text)
-                            if (Prefs.memoryEnabled) {
-                                memoryRepo.addChat("user", text)
-                                memoryRepo.addChat("assistant", result.text, result.providerId)
-                            }
+                            // Chat history is persisted independently of long-term memory toggling.
+                            memoryRepo.addChat("user", text, result.providerId)
+                            memoryRepo.addChat("assistant", result.text, result.providerId)
                             val action = CommandParser.parseAiAction(result.text)
                             if (action != null && action.type != CommandParser.Type.UNKNOWN &&
                                 action.type != CommandParser.Type.CONVERSATION
